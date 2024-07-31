@@ -1,8 +1,9 @@
 // import 'package:clay_containers/clay_containers.dart';
-import 'dart:ffi';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // 开始加载
 void main() => runApp(
@@ -47,7 +48,18 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 8,
             ),
-            HomeCard(text: "Hi!"),
+            ElevatedButton(
+                onPressed: () async {
+                  const platform = MethodChannel('vpn_service');
+                  try {
+                    await platform.invokeMethod('startVpnService');
+                  } on PlatformException catch (e) {
+                    if (kDebugMode) {
+                      print("Failed to start VPN service: '${e.message}'.");
+                    }
+                  }
+                },
+                child: const Text('start')),
             HomeCard(text: "Hi!"),
             HomeCard(
               text: "您好！",
@@ -65,6 +77,8 @@ class HomeCard extends StatelessWidget {
   String text;
   bool? big;
   double cardRadius = 16;
+  static const platform = MethodChannel('vpn_service');
+
   HomeCard({
     super.key,
     required this.text,
@@ -79,27 +93,24 @@ class HomeCard extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(2.0),
-        child: InkWell(
-          onTap: () {},
-          child: ClipRRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
-              child: Card(
-                color: Colors.white.withOpacity(0.5),
-                elevation: 0,
-                shape: ContinuousRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(cardRadius), // 设置圆角半径为cardRadius
-                ),
-                shadowColor: Colors.black.withOpacity(1),
-                child: SizedBox(
-                  width: cardWidth,
-                  height: cardHeight,
-                  child: Center(
-                    child: Text(
-                      text,
-                      style: const TextStyle(fontSize: 20),
-                    ),
+        child: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+            child: Card(
+              color: Colors.white.withOpacity(0.5),
+              elevation: 0,
+              shape: ContinuousRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(cardRadius), // 设置圆角半径为cardRadius
+              ),
+              shadowColor: Colors.black.withOpacity(1),
+              child: SizedBox(
+                width: cardWidth,
+                height: cardHeight,
+                child: Center(
+                  child: Text(
+                    text,
+                    style: const TextStyle(fontSize: 20),
                   ),
                 ),
               ),
