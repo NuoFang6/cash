@@ -1,1 +1,4 @@
 
+[submodule "android/core"]
+	path = android/core
+	url = https://github.com/MetaCubeX/mihomo.git
